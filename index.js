@@ -27,6 +27,14 @@ async function run() {
         console.log("database connected")
       // create a document to insert
 
+    // Post Bike
+
+        app.post("/bikes", async(req, res)=>{
+            const product = req.body;
+            const result = await bikesCollection.insertOne(product)
+            res.json(result)
+        })
+
     // Get all bikes
 
         app.get("/bikes", async(req, res)=>{
@@ -42,6 +50,15 @@ async function run() {
             const id = req.params.id;
             const query = {_id: ObjectId(id)}
             const result = await bikesCollection.findOne(query)
+            res.json(result);
+        })
+
+    // Delete Bike
+
+        app.delete("/bikes/:id", async(req, res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await bikesCollection.deleteOne(query)
             res.json(result);
         })
 
@@ -120,6 +137,28 @@ async function run() {
               const result = await usersCollection.updateOne(filter, updateDoc)
               res.json(result)
           })
+
+        //   GET all orders
+
+          app.get("/all/orders", async(req, res)=>{
+              const cursor = ordersCollection.find({})
+              const result = await cursor.toArray()
+              res.json(result)
+          })
+
+          // PUT api to update order status
+            app.put("/update/:id", async(req, res)=>{
+            const id = req.params.id;
+            const updatedStatus = req.body;
+            const query = {_id: ObjectId(id)};
+            const result = await ordersCollection.updateOne(query,{
+                $set:{
+                    status: updatedStatus.status,
+                }
+            })
+            res.json(result)
+        })
+
     } finally {
     //   await client.close();
     }
